@@ -12,6 +12,7 @@ import android.widget.CheckedTextView
 import android.widget.ListView
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.oz.mygoods.good.Good
 import com.oz.mygoods.good.GoodService
 import retrofit2.Call
@@ -64,7 +65,13 @@ class FirstFragment : Fragment() {
                 val user: Good = listView.getItemAtPosition(position) as Good
                 user.needed = (!currentCheck)
             }
+
         view.findViewById<Button>(R.id.button_load).setOnClickListener {
+            // notification
+                view ->
+            Snackbar.make(view, "Loading actual list of needed goods", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+
             val createCall = service.needed()
             createCall.enqueue(object : Callback<List<Good>> {
                 override fun onResponse(
@@ -73,7 +80,7 @@ class FirstFragment : Fragment() {
                     (goods as MutableList).clear()
                     for ((i, item) in response.body().withIndex()) {
                         goods.add(item)
-                        listView.setItemChecked(i, item.needed?: false)
+                        listView.setItemChecked(i, item.needed?.not() ?: false)
                     }
                     (listView.adapter as BaseAdapter).notifyDataSetChanged()
                 }
@@ -82,6 +89,10 @@ class FirstFragment : Fragment() {
                     call: Call<List<Good>>,
                     t: Throwable
                 ) {
+                    (goods as MutableList).clear()
+                    goods.add(Good(name = "Error:${t.message}"))
+                    goods.add(Good(name = "Try again"))
+                    (listView.adapter as BaseAdapter).notifyDataSetChanged()
                     t.printStackTrace()
                 }
             })
