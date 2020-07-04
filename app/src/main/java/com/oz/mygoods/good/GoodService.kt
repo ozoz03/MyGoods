@@ -16,4 +16,8 @@ interface GoodService {
     @Headers("Content-Type: application/json;charset=UTF-8")
     @POST("api/goods/new")
     fun create(@Body book: Good): Call<Good?>
+
+    @Headers("Content-Type: application/json;charset=UTF-8")
+    @PUT("api/goods/{id}")
+    fun update(@Path("id") id: Long, @Body book: Good): Call<Good?>
 }

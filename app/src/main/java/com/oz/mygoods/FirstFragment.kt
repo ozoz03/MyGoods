@@ -27,6 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class FirstFragment : Fragment() {
 
     var retrofit = Retrofit.Builder()
+//        .baseUrl("http://192.168.43.81:5000/")
         .baseUrl("https://my-goods.herokuapp.com/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
@@ -46,7 +47,7 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        view.findViewById<Button>(R.id.button_first).setOnClickListener {
+        view.findViewById<Button>(R.id.button_next).setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
 
@@ -62,8 +63,8 @@ class FirstFragment : Fragment() {
 //                Log.i(TAG, "onItemClick: $position")
                 val v = view as CheckedTextView
                 val currentCheck = v.isChecked
-                val user: Good = listView.getItemAtPosition(position) as Good
-                user.needed = (!currentCheck)
+                val good: Good = listView.getItemAtPosition(position) as Good
+                good.needed = (!currentCheck)
             }
 
         view.findViewById<Button>(R.id.button_load).setOnClickListener {
@@ -96,6 +97,35 @@ class FirstFragment : Fragment() {
                     t.printStackTrace()
                 }
             })
+        }
+
+        view.findViewById<Button>(R.id.button_sync).setOnClickListener {
+            // notification
+                view ->
+            Snackbar.make(view, "Synchronization list of needed goods", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+            for (i in 0 until listView.getCount()) {
+                val good = (listView.getItemAtPosition(i) as Good)
+                if (good.needed!!.not()) {
+                    val updateCall = service.update(good.id, good)
+                    updateCall.enqueue(object : Callback<Good?> {
+                        override fun onResponse(
+                            call: Call<Good?>, response: Response<Good?>
+                        ) {
+                            val updatedGood = response.body()
+                            Snackbar.make(view, "Update the good: $updatedGood", Snackbar.LENGTH_LONG)
+                                .setAction("Action", null).show()
+                        }
+
+                        override fun onFailure(
+                            call: Call<Good?>,
+                            t: Throwable
+                        ) {
+                            t.printStackTrace()
+                        }
+                    })
+                }
+            }
         }
     }
 }
