@@ -1,6 +1,8 @@
 package com.oz.mygoods
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ListView
@@ -8,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.oz.mygoods.good.GoodService
+import net.openid.appauth.AuthState
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -39,4 +42,20 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+//    fun readAuthState(): AuthState {
+//        val authPrefs = getSharedPreferences("OktaAppAuthState", Context.MODE_PRIVATE)
+//        val stateJson = authPrefs.getString("state", "")
+//        return if (!stateJson!!.isEmpty()) {
+//            try {
+//                AuthState.jsonDeserialize(stateJson)
+//            } catch (exp: org.json.JSONException) {
+//                Log.e("ERROR",exp.message)
+//                AuthState()
+//            }
+//
+//        } else {
+//            AuthState()
+//        }
+//    }
 }

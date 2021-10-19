@@ -13,6 +13,11 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        android.defaultConfig.manifestPlaceholders = [
+                // match the protocol of your "Login redirect URI"
+                "appAuthRedirectScheme": "com.okta.dev-663329"
+        ]
     }
 
     buildTypes {
@@ -43,6 +48,8 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.6.2'
     implementation 'com.squareup.retrofit2:retrofit:2.1.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    implementation 'com.okta.android:appauth-android:0.2.4'
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'

@@ -8,7 +8,7 @@ interface GoodService {
     fun all(): Call<List<Good>>
 
     @GET("api/goods/needed")
-    fun needed(): Call<List<Good>>
+    fun needed(@Header("Authorization") token:String): Call<List<Good>>
 
     @GET("api/goods/{id}")
     operator fun get(@Path("id") id: Long): Call<Good?>

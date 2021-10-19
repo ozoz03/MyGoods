@@ -1,6 +1,8 @@
 package com.oz.mygoods
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +17,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.oz.mygoods.good.Good
 import com.oz.mygoods.good.GoodService
+import net.openid.appauth.AuthState
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,6 +44,23 @@ class FirstFragment : Fragment() {
 
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_first, container, false)
+    }
+
+
+    fun readAuthState(): AuthState {
+        val authPrefs = context?.getSharedPreferences("OktaAppAuthState", Context.MODE_PRIVATE)
+        val stateJson = authPrefs?.getString("state", "")
+        return if (!stateJson!!.isEmpty()) {
+            try {
+                AuthState.jsonDeserialize(stateJson)
+            } catch (exp: org.json.JSONException) {
+                Log.e("ERROR",exp.message)
+                AuthState()
+            }
+
+        } else {
+            AuthState()
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -73,8 +93,8 @@ class FirstFragment : Fragment() {
             Snackbar.make(view, "Loading actual list of needed goods", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
 
-            val createCall = service.needed()
-            createCall.enqueue(object : Callback<List<Good>> {
+            val createCall = readAuthState().accessToken?.let { service.needed(it) }
+            createCall?.enqueue(object : Callback<List<Good>> {
                 override fun onResponse(
                     call: Call<List<Good>>, response: Response<List<Good>>
                 ) {
